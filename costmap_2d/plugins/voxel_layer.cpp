@@ -296,6 +296,7 @@ void VoxelLayer::raytraceFreespace(const Observation& clearing_observation, doub
   // we can pre-compute the enpoints of the map outside of the inner loop... we'll need these later
   double map_end_x = origin_x_ + getSizeInMetersX();
   double map_end_y = origin_y_ + getSizeInMetersY();
+  double map_end_z = origin_z_ + getSizeInMetersZ();
 
   sensor_msgs::PointCloud2ConstIterator<float> iter_x(*(clearing_observation.cloud_), "x");
   sensor_msgs::PointCloud2ConstIterator<float> iter_y(*(clearing_observation.cloud_), "y");
@@ -320,10 +321,10 @@ void VoxelLayer::raytraceFreespace(const Observation& clearing_observation, doub
     double t = 1.0;
 
     // we can only raytrace to a maximum z height
-    if (wpz > max_obstacle_height_)
+    if (wpz > map_end_z)
     {
       // we know we want the vector's z value to be max_z
-      t = std::max(0.0, std::min(t, (max_obstacle_height_ - 0.01 - oz) / c));
+      t = std::min(t, (map_end_z - oz) / c);
     }
     // and we can only raytrace down to the floor
     else if (wpz < origin_z_)
