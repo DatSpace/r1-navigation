@@ -407,16 +407,18 @@ namespace navfn {
     int len = planner_->getPathLen();
     ros::Time plan_time = ros::Time::now();
 
-    double prev_wx, prev_wy, path_len;
+    double prev_wx, prev_wy;
+    double path_len = 0;
 
     for(int i = len - 1; i >= 0; --i){
       //convert the plan to world coordinates
       double world_x, world_y;
       mapToWorld(x[i], y[i], world_x, world_y);
 
-      if (i > 0){
+      if (i < len - 1){
         path_len += sqrt(pow(world_x - prev_wx, 2.0) + pow(world_y - prev_wy, 2.0));
       }
+
       prev_wx = world_x;
       prev_wy = world_y;
 

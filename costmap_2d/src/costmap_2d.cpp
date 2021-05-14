@@ -338,6 +338,7 @@ bool Costmap2D::setConvexPolygonCost(const std::vector<geometry_msgs::Point>& po
     unsigned int index = getIndex(polygon_cells[i].x, polygon_cells[i].y);
     costmap_[index] = cost_value;
   }
+
   return true;
 }
 
