@@ -435,9 +435,7 @@ namespace navfn {
       pose.pose.orientation.w = 1.0;
       plan.push_back(pose);
     }
-    
-    std::cout << "\n" << plan_lenght_threshold_;
-    
+        
     if (path_len > plan_lenght_threshold_){
       plan.clear();
     }
