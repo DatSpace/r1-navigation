@@ -80,6 +80,7 @@ namespace navfn {
       private_nh.param("planner_window_x", planner_window_x_, 0.0);
       private_nh.param("planner_window_y", planner_window_y_, 0.0);
       private_nh.param("default_tolerance", default_tolerance_, 0.0);
+      private_nh.param("plan_lenght_threshold", plan_lenght_threshold_, 50.0);
 
       make_plan_srv_ =  private_nh.advertiseService("make_plan", &NavfnROS::makePlanService, this);
 
@@ -434,8 +435,10 @@ namespace navfn {
       pose.pose.orientation.w = 1.0;
       plan.push_back(pose);
     }
-
-    if (path_len > 50.0){
+    
+    std::cout << "\n" << plan_lenght_threshold_;
+    
+    if (path_len > plan_lenght_threshold_){
       plan.clear();
     }
 
