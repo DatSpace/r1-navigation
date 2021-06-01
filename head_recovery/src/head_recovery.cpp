@@ -50,7 +50,7 @@ PLUGINLIB_EXPORT_CLASS(head_recovery::HeadRecovery, nav_core::RecoveryBehavior)
 
 namespace head_recovery
 {
-  HeadRecovery::HeadRecovery(): initialized_(false), radius_(15), num_points_(100), yarp_head_port_("/SIM_CER_ROBOT/head/rpc:i")
+  HeadRecovery::HeadRecovery(): initialized_(false), radius_(15), num_points_(100), yarp_head_port_("/cer/head/rpc:i")
   {
     for (int i = 0; i <= num_points_ - 1 ; i++){
       float x = cos(2 * PI / num_points_ * i) * radius_;
@@ -98,29 +98,32 @@ namespace head_recovery
     ros::NodeHandle n;
     ros::Publisher vel_pub = n.advertise<std_msgs::String>("yarp_rpc_publisher", 10);
 
+    ros::Duration(0.1).sleep();
+
     std_msgs::String message;
     message.data = yarp_head_port_;
     vel_pub.publish(message);
 
     // while (n.ok())
     // {
-      ros::Duration(0.5).sleep();
+      ros::Duration(0.1).sleep();
       message.data = "set vel 0 10";
       vel_pub.publish(message);
       message.data = "set vel 1 10";
       vel_pub.publish(message);
 
       for (int i = 0; i <= num_points_ - 1; i++){
-
         message.data = "set pos 1 " + std::to_string(circle_points_[i][0]);
         vel_pub.publish(message);
+        ros::Duration(0.05).sleep();
         message.data = "set pos 0 " + std::to_string(circle_points_[i][1]);
         vel_pub.publish(message);
-        ros::Duration(0.1).sleep();
+        ros::Duration(0.05).sleep();
       }
 
       message.data = "set pos 1 0";
       vel_pub.publish(message);
+      ros::Duration(0.1).sleep();
       message.data = "set pos 0 0";
       vel_pub.publish(message);
 
