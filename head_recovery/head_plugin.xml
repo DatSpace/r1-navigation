@@ -1,0 +1,7 @@
+<library path="lib/libhead_recovery">
+  <class name="head_recovery/HeadRecovery" type="head_recovery::HeadRecovery" base_class_type="nav_core::RecoveryBehavior">
+    <description>
+      A recovery behavior that performs a random head movement for some time to clear out voxels.
+    </description>
+  </class>
+</library>
