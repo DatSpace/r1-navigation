@@ -50,7 +50,7 @@ PLUGINLIB_EXPORT_CLASS(head_recovery::HeadRecovery, nav_core::RecoveryBehavior)
 
 namespace head_recovery
 {
-  HeadRecovery::HeadRecovery(): initialized_(false), radius_(15), num_points_(100), yarp_head_port_("/cer/head/rpc:i")
+  HeadRecovery::HeadRecovery(): initialized_(false), radius_(15), num_points_(100)
   {
     for (int i = 0; i <= num_points_ - 1 ; i++){
       float x = cos(2 * PI / num_points_ * i) * radius_;
@@ -69,8 +69,26 @@ namespace head_recovery
       // get some parameters from the parameter server
       ros::NodeHandle private_nh("~/" + name);
 
-      // we'll simulate every degree by default
-      //private_nh.param("sim_granularity", sim_granularity_, 0.017);
+      // Load a string array of the ports to connect and keep oepn
+      std::vector<std::string> yarp_ports_default, yarp_ports;
+      yarp_ports_default.push_back( std::string("/cer/head/rpc:i") );
+      private_nh.param("yarp_ports", yarp_ports, yarp_ports_default);
+
+      for(unsigned i=0; i < yarp_ports.size(); i++) {
+          yarp_ports_.push_back(yarp_ports[i]);
+      }
+
+      ros::NodeHandle n;
+      pub_ = n.advertise<std_msgs::String>("yarp_rpc_publisher", 10);
+      
+      ros::Duration(0.5).sleep();
+
+      std_msgs::String message;
+      for (int i = 0; i < yarp_ports_.size(); i++){
+        message.data = "connect " + yarp_ports_[i];
+        pub_.publish(message);
+        ros::Duration(0.1).sleep();
+      }
 
       initialized_ = true;
     }
@@ -94,40 +112,35 @@ namespace head_recovery
 
     ROS_WARN("Head movement recovery behavior started.");
 
-    ros::Rate r(20);
-    ros::NodeHandle n;
-    ros::Publisher vel_pub = n.advertise<std_msgs::String>("yarp_rpc_publisher", 10);
-
-    ros::Duration(0.1).sleep();
-
     std_msgs::String message;
-    message.data = yarp_head_port_;
-    vel_pub.publish(message);
 
-    // while (n.ok())
-    // {
-      ros::Duration(0.1).sleep();
-      message.data = "set vel 0 10";
-      vel_pub.publish(message);
-      message.data = "set vel 1 10";
-      vel_pub.publish(message);
+    for (int i = 0; i <= num_points_ - 1; i++){
+      message.data = "write " + yarp_ports_[0] + " set pos 1 " + std::to_string(circle_points_[i][0]);
+      pub_.publish(message);
+      ros::Duration(0.05).sleep();
+      message.data = "write " + yarp_ports_[0] + " set pos 0 " + std::to_string(circle_points_[i][1]);
+      pub_.publish(message);
+      ros::Duration(0.05).sleep();
 
-      for (int i = 0; i <= num_points_ - 1; i++){
-        message.data = "set pos 1 " + std::to_string(circle_points_[i][0]);
-        vel_pub.publish(message);
-        ros::Duration(0.05).sleep();
-        message.data = "set pos 0 " + std::to_string(circle_points_[i][1]);
-        vel_pub.publish(message);
-        ros::Duration(0.05).sleep();
-      }
+      message.data = "write " + yarp_ports_[1] + " set pos 3 " + std::to_string(circle_points_[i][0]);
+      pub_.publish(message);
+      ros::Duration(0.05).sleep();
+      message.data = "write " + yarp_ports_[1] + " set pos 2 " + std::to_string(circle_points_[i][1]);
+      pub_.publish(message);
+      ros::Duration(0.05).sleep();
+    }
 
-      message.data = "set pos 1 0";
-      vel_pub.publish(message);
-      ros::Duration(0.1).sleep();
-      message.data = "set pos 0 0";
-      vel_pub.publish(message);
+    message.data = "write " + yarp_ports_[0] + " set pos 1 0";
+    pub_.publish(message);
+    ros::Duration(0.05).sleep();
+    message.data = "write " + yarp_ports_[0] + " set pos 0 0";
+    pub_.publish(message);
+    ros::Duration(0.05).sleep();
 
-    //   r.sleep();
-    // }
+    message.data = "write " + yarp_ports_[1] + " set pos 3 0";
+    pub_.publish(message);
+    ros::Duration(0.05).sleep();
+    message.data = "write " + yarp_ports_[1] + " set pos 2 0";
+    pub_.publish(message);
   }
 };  // namespace head_recovery

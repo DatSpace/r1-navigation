@@ -42,7 +42,8 @@ namespace head_recovery
       bool initialized_;
       float circle_points_[100][2];
       int radius_, num_points_;
-      std::string yarp_head_port_;
+      std::vector<std::string> yarp_ports_;
+      ros::Publisher pub_;
   };
 };  // namespace head_recovery
 #endif  // HEAD_RECOVERY_HEAD_RECOVERY_H
