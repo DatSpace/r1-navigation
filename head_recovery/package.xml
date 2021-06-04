@@ -5,31 +5,24 @@
     <version>1.0.0</version>
     <description>
 
-        This package provides a recovery behavior for the navigation stack that attempts to clear space by performing a 360 degree rotation of the robot.
+        This package provides a recovery behavior for the navigation stack that that performs a predefined head and torso movement for some time, to clear out voxels.
 
     </description>
-    <author>Eitan Marder-Eppstein</author>
-    <author>contradict@gmail.com</author>
-    <maintainer email="davidvlu@gmail.com">David V. Lu!!</maintainer>
-    <maintainer email="mfergs7@gmail.com">Michael Ferguson</maintainer>
-    <maintainer email="ahoy@fetchrobotics.com">Aaron Hoy</maintainer>
+    <author>Konstantinos Karapas</author>
+    <maintainer email="konstantinos.karapas@iit.it">Konstantinos Karapas</maintainer>
     <license>BSD</license>
-    <url>http://wiki.ros.org/rotate_recovery</url>
+    <url>https://github.com/DatSpace/r1-navigation</url>
 
     <buildtool_depend>catkin</buildtool_depend>
 
-    <build_depend>angles</build_depend>
-    <build_depend>base_local_planner</build_depend>
     <build_depend>cmake_modules</build_depend>
 
     <depend>costmap_2d</depend>
     <depend>eigen</depend>
-    <depend>geometry_msgs</depend>
     <depend>nav_core</depend>
     <depend>pluginlib</depend>
     <depend>roscpp</depend>
     <depend>tf2</depend>
-    <depend>tf2_geometry_msgs</depend>
     <depend>tf2_ros</depend>
 
     <export>
