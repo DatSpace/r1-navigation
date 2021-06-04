@@ -40,7 +40,6 @@
 #include <tf2/utils.h>
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include <algorithm>
 #include <math.h>
 
 #define PI 3.14159265
@@ -50,19 +49,22 @@ PLUGINLIB_EXPORT_CLASS(head_recovery::HeadRecovery, nav_core::RecoveryBehavior)
 
 namespace head_recovery
 {
-  HeadRecovery::HeadRecovery(): initialized_(false), radius_(15), num_points_(100)
+  HeadRecovery::HeadRecovery() : initialized_(false)
   {
-    for (int i = 0; i <= num_points_ - 1 ; i++){
-      float x = cos(2 * PI / num_points_ * i) * radius_;
-      float y = sin(2 * PI / num_points_ * i) * radius_;
+    movement_coords_[0][0] = 0;
+    movement_coords_[0][1] = 15;
 
-      circle_points_[i][0] = x;
-      circle_points_[i][1] = y;
-    }
+    movement_coords_[1][0] = 15;
+    movement_coords_[1][1] = 0;
 
+    movement_coords_[2][0] = 0;
+    movement_coords_[2][1] = -15;
+
+    movement_coords_[3][0] = -15;
+    movement_coords_[3][1] = 0;
   }
 
-  void HeadRecovery::initialize(std::string name, tf2_ros::Buffer*, costmap_2d::Costmap2DROS*, costmap_2d::Costmap2DROS* local_costmap)
+  void HeadRecovery::initialize(std::string name, tf2_ros::Buffer *, costmap_2d::Costmap2DROS *, costmap_2d::Costmap2DROS *local_costmap)
   {
     if (!initialized_)
     {
@@ -71,20 +73,22 @@ namespace head_recovery
 
       // Load a string array of the ports to connect and keep oepn
       std::vector<std::string> yarp_ports_default, yarp_ports;
-      yarp_ports_default.push_back( std::string("/cer/head/rpc:i") );
+      yarp_ports_default.push_back(std::string("/cer/head/rpc:i"));
       private_nh.param("yarp_ports", yarp_ports, yarp_ports_default);
 
-      for(unsigned i=0; i < yarp_ports.size(); i++) {
-          yarp_ports_.push_back(yarp_ports[i]);
+      for (unsigned i = 0; i < yarp_ports.size(); i++)
+      {
+        yarp_ports_.push_back(yarp_ports[i]);
       }
 
       ros::NodeHandle n;
       pub_ = n.advertise<std_msgs::String>("yarp_rpc_publisher", 10);
-      
+
       ros::Duration(0.5).sleep();
 
       std_msgs::String message;
-      for (int i = 0; i < yarp_ports_.size(); i++){
+      for (int i = 0; i < yarp_ports_.size(); i++)
+      {
         message.data = "connect " + yarp_ports_[i];
         pub_.publish(message);
         ros::Duration(0.1).sleep();
@@ -114,33 +118,27 @@ namespace head_recovery
 
     std_msgs::String message;
 
-    for (int i = 0; i <= num_points_ - 1; i++){
-      message.data = "write " + yarp_ports_[0] + " set pos 1 " + std::to_string(circle_points_[i][0]);
+    for (int i = 0; i <= 3; i++)
+    {
+      message.data = "write " + yarp_ports_[0] + " set pos 1 " + std::to_string(movement_coords_[i][0]);
       pub_.publish(message);
-      ros::Duration(0.05).sleep();
-      message.data = "write " + yarp_ports_[0] + " set pos 0 " + std::to_string(circle_points_[i][1]);
+      message.data = "write " + yarp_ports_[0] + " set pos 0 " + std::to_string(movement_coords_[i][1]);
       pub_.publish(message);
-      ros::Duration(0.05).sleep();
-
-      message.data = "write " + yarp_ports_[1] + " set pos 3 " + std::to_string(circle_points_[i][0]);
+      message.data = "write " + yarp_ports_[1] + " set pos 3 " + std::to_string(movement_coords_[i][0]);
       pub_.publish(message);
-      ros::Duration(0.05).sleep();
-      message.data = "write " + yarp_ports_[1] + " set pos 2 " + std::to_string(circle_points_[i][1]);
+      message.data = "write " + yarp_ports_[1] + " set pos 2 " + std::to_string(movement_coords_[i][1]);
       pub_.publish(message);
-      ros::Duration(0.05).sleep();
+      ros::Duration(2.0).sleep();
     }
 
     message.data = "write " + yarp_ports_[0] + " set pos 1 0";
     pub_.publish(message);
-    ros::Duration(0.05).sleep();
     message.data = "write " + yarp_ports_[0] + " set pos 0 0";
     pub_.publish(message);
-    ros::Duration(0.05).sleep();
 
     message.data = "write " + yarp_ports_[1] + " set pos 3 0";
     pub_.publish(message);
-    ros::Duration(0.05).sleep();
     message.data = "write " + yarp_ports_[1] + " set pos 2 0";
     pub_.publish(message);
   }
-};  // namespace head_recovery
+}; // namespace head_recovery
