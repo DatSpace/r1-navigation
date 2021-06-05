@@ -82,7 +82,7 @@ namespace head_recovery
       }
 
       ros::NodeHandle n;
-      pub_ = n.advertise<std_msgs::String>("yarp_rpc_publisher", 10);
+      pub_ = n.advertise<std_msgs::String>("yarp_rpc_wrapper_write", 10);
 
       ros::Duration(0.5).sleep();
 
