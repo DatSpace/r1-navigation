@@ -114,6 +114,11 @@ namespace head_recovery
       return;
     }
 
+    if (yarp_ports_.size() < 2)
+    {
+      ROS_ERROR("There need to be at least two ports specified in the config")
+    }
+
     ROS_WARN("Head movement recovery behavior started.");
 
     std_msgs::String message;
