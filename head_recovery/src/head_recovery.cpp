@@ -51,16 +51,16 @@ namespace head_recovery
 {
   HeadRecovery::HeadRecovery() : initialized_(false)
   {
-    movement_coords_[0][0] = 0;
-    movement_coords_[0][1] = 15;
+    movement_coords_[0][0] = 15;
+    movement_coords_[0][1] = 0;
 
-    movement_coords_[1][0] = 15;
+    movement_coords_[1][0] = -15;
     movement_coords_[1][1] = 0;
 
     movement_coords_[2][0] = 0;
-    movement_coords_[2][1] = -15;
+    movement_coords_[2][1] = 15;
 
-    movement_coords_[3][0] = -15;
+    movement_coords_[3][0] = 0;
     movement_coords_[3][1] = 0;
   }
 
@@ -130,21 +130,14 @@ namespace head_recovery
       pub_.publish(message);
       message.data = "write " + yarp_ports_[0] + " set pos 0 " + std::to_string(movement_coords_[i][1]);
       pub_.publish(message);
+      
       message.data = "write " + yarp_ports_[1] + " set pos 3 " + std::to_string(movement_coords_[i][0]);
       pub_.publish(message);
-      message.data = "write " + yarp_ports_[1] + " set pos 1 " + std::to_string(movement_coords_[i][1]);
-      pub_.publish(message);
-      ros::Duration(2.0).sleep();
+      if (i != 2){
+        message.data = "write " + yarp_ports_[1] + " set pos 1 " + std::to_string(movement_coords_[i][1]);
+        pub_.publish(message);
+      }
+      ros::Duration(3.0).sleep();
     }
-
-    message.data = "write " + yarp_ports_[0] + " set pos 1 0";
-    pub_.publish(message);
-    message.data = "write " + yarp_ports_[0] + " set pos 0 0";
-    pub_.publish(message);
-
-    message.data = "write " + yarp_ports_[1] + " set pos 3 0";
-    pub_.publish(message);
-    message.data = "write " + yarp_ports_[1] + " set pos 1 0";
-    pub_.publish(message);
   }
 }; // namespace head_recovery
