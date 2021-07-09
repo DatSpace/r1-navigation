@@ -972,6 +972,9 @@ namespace move_base {
           last_valid_plan_ = ros::Time::now();
           planning_retries_ = 0;
           state_ = PLANNING;
+          
+          msg.total_number_of_recoveries = 999; // Impossible unless set manually here. Used to indicate the end of the recovery behavior.
+          recovery_status_pub_.publish(msg);
 
           //update the index of the next recovery behavior that we'll try
           recovery_index_++;
