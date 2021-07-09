@@ -11,7 +11,7 @@
     <author>Konstantinos Karapas</author>
     <maintainer email="konstantinos.karapas@iit.it">Konstantinos Karapas</maintainer>
     <license>BSD</license>
-    <url>https://github.com/DatSpace/r1-navigation</url>
+    <url>https://github.com/DatSpace/r1-navigation-head-recovery</url>
 
     <buildtool_depend>catkin</buildtool_depend>
 
